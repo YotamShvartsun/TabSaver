@@ -1,0 +1,29 @@
+﻿.button {
+    padding: 1px 6px !important;
+    border: none;
+    margin: 2px !important;
+}
+
+.Del {
+    background-color: #f7bd6f;
+    border: none;
+    color: white;
+    margin: 2px !important;
+    padding: 1px 6px !important;
+}
+
+select {
+    margin: 2px;
+}
+
+.div {
+    white-space: nowrap;
+}
+
+a:hover {
+    color: #990EF3 !important
+}
+
+a {
+    color: #001dff !important
+}
