@@ -1,7 +1,7 @@
 ﻿$(function () {
     $("#Version").text("version: " + chrome.runtime.getManifest().version);
     $("#Helpus").click(function () {
-        chrome.tabs.create({ url: "https://github.com/MiperMip/Tab_Saver" });
+        chrome.tabs.create({ url: "https://github.com/YotamShvartsun/TabSaver" });
     });
     $("#Reset_All").click(function () {
         localStorage["TabSaver!!_Action"] = JSON.stringify("Reset Tab Saver?");
