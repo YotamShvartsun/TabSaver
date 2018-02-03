@@ -1,5 +1,7 @@
 var page = "popup.html";
 var html = '';
+
+
 function str2arryParser(input_Local_Storage_string) {
     return JSON.parse(input_Local_Storage_string);
 }
@@ -18,6 +20,8 @@ function Delete_From_Array(Value, _Array) {
     console.log(_Array);
     return _Array;
 }
+
+
 function save() {
     document.body.innerHTML = '';
     html = '<button class="btn btn-success button"id=Home style="padding:1px 6px">Main Menu</button><p class=text-primary style=white-space:n-resize>Name Your Saved Tabs(Without commas in the Name!) You can save you tabs by date, name, or both name and date.<p class="text-primary text"id=Staus></p><select class=form-control id=SaveType style=white-space:nowrap><option value=Nameonly>By User Input<option value=DateOnly>By Time Stamp Only<option value=NameAndDate>By User Input And Time Stamp</select><input class=form-control id=Save_Name> <button class="btn btn-primary"id=Save_Btn>Save your Tabs!</button>';
@@ -43,7 +47,6 @@ function save() {
         for (var i in Tabs) {
             tabsUrls.push(Tabs[i].url);
         }
-        console.log("Ok");
         Tab_Save(tabsUrls);
     }
     function Tab_Save(tabs) {
@@ -102,6 +105,8 @@ function save() {
         return String_Date;
     }
 }
+
+
 function read() {
     var deletebtn, div, openbtn, editbtn;
     var SavesArray;
@@ -110,7 +115,6 @@ function read() {
     html = '<button id=Home>Main Menu</button><p class=text-primary id=Status style=white-space:no-warp>';
     $("body").html(html);
     $("#Home").click(function () {
-        console.log("a");
         popup()
     });
     $("#Home").addClass("button btn btn-success");
@@ -118,13 +122,13 @@ function read() {
     if (typeof (Saves) === 'undefined') {
         $("#Status").text("You Don't Have Any Saved Tabs!");
         $("#Status").css("white-spaces", "nowarp");
-        throw '';
+        
     }
-    SavesArray = str2arryParser(Saves);
-    Logic_Adder();
-    function Logic_Adder() {
-        for (var i in SavesArray) {
-            HTML_creator(i);
+    else{
+        SavesArray = str2arryParser(Saves);
+        for(var i in SavesArray)
+        {
+            HTML_creator.call(this,i);
         }
     }
     function HTML_creator(btn_Number) {
@@ -136,7 +140,7 @@ function read() {
         });
         editbtn.click(function () {
             localStorage["SaveNameToEdit"] = JSON.stringify(SavesArray[btn_Number]);
-            edit();
+            edit(SavesArray[btn_Number]);
         });
         deletebtn = $("<button></button>").text("Delete " + SavesArray[btn_Number]).addClass("btn btn-warning").css("padding", "1px 6px", "important");
         deletebtn.click(function () {
@@ -163,26 +167,31 @@ function read() {
         }
         for (var x in Tabs) {
             var TabUrl = Tabs[x].toString();
-            chrome.tabs.create({
-                url: TabUrl,
-                active: false
-            });
-            NumberOfTabs++;
+            if(x!=0){
+                chrome.tabs.create({
+                    url: TabUrl,
+                    active: false
+                });
+                NumberOfTabs++;
+            }
+            else
+            {
+                CloseFirstTab(TabUrl);
+            }
         }
-        CloseFirstTab();
-        console.log(Tabs.length);
+        
     }
-    function CloseFirstTab() {
+    function CloseFirstTab(url) {
         var queryInfo = {
             currentWindow: true
         };
+        window.url=url;
         var query = chrome.tabs.query(queryInfo, closefirst);
     }
     function closefirst(Tabs) {
-        console.log("in closefirst");
         if (Tabs.length - NumberOfTabs === 1) {
             if (Tabs[0].url === "chrome://newtab/") {
-                chrome.tabs.remove(Tabs[0].id);
+                chrome.tabs.update(Tabs[0].id,{url: window.url});
             }
         }
         chrome.tabs.update(Tabs[Tabs.length - 1].id, {
@@ -197,13 +206,15 @@ function read() {
         return -1;
     }
 }
-function edit() {
+
+
+function edit(saveName) {
     document.body.innerHTML = '';
     html = '<body class=container><p class=text-info id=SaveName>Edit</p><button class="btn btn-info button"id=changename>Rename this save</button>';
     $("body").html(html);
-    var Save = JSON.parse(localStorage[JSON.parse(localStorage["SaveNameToEdit"])]);
+    var Save = JSON.parse(localStorage[saveName]);
     var removed = 0;
-    $("#SaveName").text("Edit " + JSON.parse(localStorage["SaveNameToEdit"]) + ":").click(function () {
+    $("#SaveName").text("Edit " + saveName + ":").click(function () {
         read();
     });
     Generate();
@@ -211,9 +222,9 @@ function edit() {
         var Newname = $("#NameInput").val();
         var Saves = JSON.parse(localStorage.Saves);
         localStorage[Newname] = JSON.stringify(Save);
-        localStorage.removeItem(JSON.parse(localStorage["SaveNameToEdit"]));
+        localStorage.removeItem(saveName);
         Saves = Saves.filter(function (e) {
-            return e !== JSON.parse(localStorage["SaveNameToEdit"])
+            return e !== JSON.parse(saveName)
         });
         Saves.push(Newname);
         localStorage["Saves"] = JSON.stringify(Saves);
@@ -251,6 +262,8 @@ function edit() {
         removed++;
     }
 }
+
+
 function deletepage() {
     document.body.innerHTML = '';
     html = '<div style=white-space:nowrap><p class=text-primary id=Action></div><button class="btn button btn-primary"id=Yes>Yes</button> <button class="btn button btn-warning"id=No style="padding:5px 5px">No</button>';
@@ -286,6 +299,8 @@ function deletepage() {
         });
     }
 }
+
+
 function imex() {
     document.body.innerHTML = '';
     html = '<button class="btn btn-success button"id=home>Back</button><div style=white-space:nowrap><button class="btn btn-primary"id=im>Import file</button> <button class="btn btn-primary"id=ex>Export to file</button></div>';
@@ -300,6 +315,8 @@ function imex() {
         popup();
     });
 }
+
+
 function importpage() {
     document.body.innerHTML = '';
     html = '<button class="btn btn-success button"id=home>Back</button> <button class="btn btn-primary"id=inf>Choose file to import from</button> <input accept=.json id=fileinput type=file>';
@@ -313,7 +330,6 @@ function importpage() {
     var Saves;
     fileimp.change(Import);
     inf.click(function () {
-        console.log("click");
         fileimp.click();
     });
     function Import(e) {
@@ -332,22 +348,18 @@ function importpage() {
     }
     function AddTostorage(Json) {
         for (s in Json) {
-            console.log(s);
             if (localStorage.getItem(s) === null) {
                 if (s !== "TabSaver!!_Args" && s !== "TabSaver!!_Action") {
                     localStorage[s] = Json[s];
                     if (s !== "Saves") {
-                        console.log(s);
                         Saves.push(s);
                     }
                 }
             } else {
                 var localsaves = str2arryParser(localStorage[s]);
-                console.log(localsaves);
                 var importedsaves = Json[s];
-                console.log(Json[s]);
                 if (typeof (localsaves) !== Object) {
-                    console.log("not object");
+                    console.warn("Problem getting saves from file! f:AddToStorage");
                 } else {
                     for (y in importedsaves) {
                         if (Is_In_Array(localsaves, importedsaves[y])) {
@@ -363,6 +375,8 @@ function importpage() {
         localStorage.Saves = JSON.stringify(Saves);
     }
 }
+
+
 function tabexportpage() {
     document.body.innerHTML = '';
     html = '<button class="btn button btn-success"id=b style=white-space:nowrap>Back to Main Menu</button><p class=text-info id=action><p class=text-info>Export your tabs by:<div><label><input class=radio id=date name=filename type=radio>Date</label><br><label><input class=radio id=name name=filename type=radio checked>Name</label></div><input class=form-control id=Name style=width:auto value="Name your file"> <button class="btn button btn-primary"id=download>Download</button>';
@@ -406,6 +420,8 @@ function tabexportpage() {
         return String_Date;
     }
 }
+
+
 function popup() {
     document.body.innerHTML = '';
     html = '<button class="btn btn-primary"id=Save style="padding:5px 5px;margin:15px">Save All Tabs</button> <button class="btn btn-primary"id=Restore style="padding:5px 5px;margin:15px">Open Your Saved Tabs</button> <button class="btn btn-primary"id=imex style="padding:5px 5px;margin:15px">Import/Export tabs</button>';
@@ -420,6 +436,8 @@ function popup() {
         imex();
     });
 }
+
+
 $(function () {
     popup();
 });
