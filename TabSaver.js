@@ -387,15 +387,15 @@ function tabexportpage() {
     $("#date").change(datechange);
     $("#name").change(namechange)
     function Export() {
-        var mylink = $("<a><a>");
         var blob = new Blob([JSON.stringify(localStorage)], {
             type: "application/json"
         });
         var Name = $("#Name").val() + ".json";
         var url = window.URL.createObjectURL(blob);
-        mylink.attr("href", url);
-        mylink.attr("download", Name);
-        mylink[0].click();
+        chrome.downloads.download({
+            url:url,
+            filename: Name
+        });
         $("#action").text("You successfully exported your saves.The file is in your downloads folder now.");
     }
     $("#download").click(Export);
