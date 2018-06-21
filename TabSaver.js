@@ -167,36 +167,33 @@ function read() {
         }
         for (var x in Tabs) {
             var TabUrl = Tabs[x].toString();
-            if(x!=0){
-                chrome.tabs.create({
-                    url: TabUrl,
-                    active: false
-                });
-                NumberOfTabs++;
-            }
-            else
-            {
-                CloseFirstTab(TabUrl);
-            }
+            chrome.tabs.create({
+                url: TabUrl,
+                active: false
+            });
+            NumberOfTabs++;
         }
+        CloseFirstTab();
         
     }
-    function CloseFirstTab(url) {
+    function CloseFirstTab() {
         var queryInfo = {
             currentWindow: true
         };
-        window.url=url;
         var query = chrome.tabs.query(queryInfo, closefirst);
     }
     function closefirst(Tabs) {
         if (Tabs.length - NumberOfTabs === 1) {
             if (Tabs[0].url === "chrome://newtab/") {
-                chrome.tabs.update(Tabs[0].id,{url: window.url});
+                chrome.tabs.remove(Tabs[0].id, function(){});
             }
         }
-        chrome.tabs.update(Tabs[Tabs.length - 1].id, {
-            selected: true
+        else
+        {
+            chrome.tabs.update(Tabs[Tabs.length - 1].id, {
+                selected: true
         });
+    }
     }
     function Find_index_in_Array(_Array, item) {
         for (i in _Array) {
@@ -387,15 +384,15 @@ function tabexportpage() {
     $("#date").change(datechange);
     $("#name").change(namechange)
     function Export() {
+        var mylink = $("<a><a>");
         var blob = new Blob([JSON.stringify(localStorage)], {
             type: "application/json"
         });
         var Name = $("#Name").val() + ".json";
         var url = window.URL.createObjectURL(blob);
-        chrome.downloads.download({
-            url:url,
-            filename: Name
-        });
+        mylink.attr("href", url);
+        mylink.attr("download", Name);
+        mylink[0].click();
         $("#action").text("You successfully exported your saves.The file is in your downloads folder now.");
     }
     $("#download").click(Export);
@@ -406,7 +403,8 @@ function tabexportpage() {
         }
     }
     function namechange() {
-        if ($("#name").is(":checked")) {
+        if ($("#name").is(":checked"))
+        {
             $("#Name").val("Name your file");
             $("#Name").prop("disabled", false);
         }
