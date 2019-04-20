@@ -1,0 +1,23 @@
+{
+  "name": "tabsaver",
+  "version": "1.0.0",
+  "description": "The tab saver chrome extesion",
+  "main": "TabSaver.js",
+  "dependencies": {
+    "hybrids": "^2.0.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YotamShvartsun/TabSaver.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/YotamShvartsun/TabSaver/issues"
+  },
+  "homepage": "https://github.com/YotamShvartsun/TabSaver#readme"
+}
