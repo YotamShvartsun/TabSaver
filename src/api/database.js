@@ -56,7 +56,7 @@
     /***
      * @description returns the urls for a group, if exists
      * @param groupName name of the group
-     * @param callback callback for result
+     * @callback (groupId)=>void
      */
     GetGroupByName(groupName, callback)
     {
@@ -70,6 +70,8 @@
 	}
 	/***
 	 * @description create a new group with tabs
+     * @param group {object} group object with date and name
+     * @param tabs {list} list of tab object with name
 	 */
     InsertNew(group, tabs)
     {
@@ -79,6 +81,6 @@
             {
 				tx.executeSql('insert into tabs (url, group) values (?, select max(id) from groups)', [tab.url]);
             }
-        })
+        });
     }
 }

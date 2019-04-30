@@ -1,7 +1,7 @@
 /***
  * opens a new tab
- * @param url string url to open
- * @param active bool is active tab
+ * @param {string} url url to open
+ * @param {boolean} active is active tab
  */
 export function openUrl(url, active)
 {
