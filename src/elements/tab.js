@@ -8,9 +8,8 @@ export function openTab(caller)
 
 export const Tab = {
     url: '',
-    render: (url)=>{
+    render: ({url})=>{
         Tab.url = url;
-        return html`<button onclick="${openTab}"><p>${url}</p></button>`;
+        return html`<button onclick="${openTab}">${url}</button>`;
     }
 }
-define('tab', Tab);

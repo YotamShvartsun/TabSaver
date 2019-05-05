@@ -4,9 +4,11 @@
   "description": "The tab saver chrome extesion",
   "main": "TabSaver.js",
   "dependencies": {
+    "@babel/polyfill": "^7.4.4",
     "@babel/preset-env": "^7.4.4",
     "browserify": "^16.2.3",
-    "hybrids": "^2.0.2"
+    "hybrids": "^2.0.2",
+    "pouchdb-browser": "^7.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.4.4",
@@ -14,7 +16,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "browserify src/index.js -o dist/bundle.js"
+    "build": "node build.js"
   },
   "repository": {
     "type": "git",

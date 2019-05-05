@@ -1,86 +1,23 @@
-/***
- * @description class for handling the database
- */
+import PouchDB from 'pouchdb-browser';
 
- export class Loader{
+export class Loader
+{
     constructor()
     {
-        this.db = openDatabase('tabsdb', '1.0', 'tabs', 2 * 1024 * 1024);
-        if(!this.db)
-            throw Error("Unable to open database");
-        // create the tables
-        this.db.transaction((tx)=>{
-            tx.executeSql('CREATE TABLE IF NOT EXISTS tabs (id INT primary key autoincrement, url text, group int not NULL);')
-            tx.executeSql('CREATE TABLE IF NOT EXISTS groups (id INT primary key autoincrement, name text, date int not null);')
+        this.dbHandler = new PouchDB('tabsDb');
+        this.dbHandler.info().then((info)=>{
+            console.log(info);
         });
+        // no need for init?
     }
-    /***
-     * @description get all urls in a group
-     * @param saveId id of the group
-     * @param callback callback for result
-     */
-    GetBySaveID(saveId, callback)
+    async GetBySaveID(saveID)
     {
-        let result = [];
-        this.db.transaction((tx)=>{
-            tx.executeSql('SELECT * FROM TABS WHERE group = ?;', [saveId], (tx, res)=>{
-                for(let obj of res.rows)
-                {
-                    result.push({url: obj['url']});
-                }
-                callback(result);
-            }, (err)=>{
-                console.error(`error while getting data from db ${err}`);
-            });
-        });
+        let result = await this.dbHandler.get(saveID);
+        console.log(result);
+        return result;
     }
-    /***
-     * @description get all groups saved
-     * @param callback callback for result
-     */
-    GetAllGroups(callback)
+    async InsertNew(savename, tabs)
     {
-        let result = [];
-        this.db.transaction((tx)=>{
-            tx.executeSql('SELECT * from groups;', [], (tx, res)=>{
-                for(let obj of res.rows)
-                {
-                    result.push({id: obj['id'], name: obj['name'], date: obj['date']});
-                }
-                callback(result);
-            }, (err)=>{
-                console.error(err);
-            });
-        });
-    }
-    /***
-     * @description returns the urls for a group, if exists
-     * @param groupName name of the group
-     * @callback (groupId)=>void
-     */
-    GetGroupByName(groupName, callback)
-    {
-        this.db.transaction((tx)=>{
-            tx.executeSql('SELECT id from groups where name = ?', [groupName], (tx, res)=>{
-                if(res.rows.lenght != 1) // two groups with the same id
-                    throw Error('Error while reading from database');
-                this.GetGroupByName(res.rows[0]['id'], callback);
-            });
-        });
-	}
-	/***
-	 * @description create a new group with tabs
-     * @param group {object} group object with date and name
-     * @param tabs {list} list of tab object with name
-	 */
-    InsertNew(group, tabs)
-    {
-        this.db.transaction((tx)=>{
-            tx.executeSql('INSERT INTO groups (name, date) values (?,?)', [group.name, group.date]);
-            for(tab of tabs)
-            {
-				tx.executeSql('insert into tabs (url, group) values (?, select max(id) from groups)', [tab.url]);
-            }
-        });
+        await this.dbHandler.put({_id:savename, tabs:tabs});
     }
 }
