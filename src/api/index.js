@@ -1,2 +1,2 @@
-export * from './database'
-export * from './tabsApi'
+export { Loader } from './database';
+export * from './tabsApi';
